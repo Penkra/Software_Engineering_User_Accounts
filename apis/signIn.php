@@ -7,15 +7,18 @@ require_once '../exe/connection.php';
 
 require_params(["email", "password"]);
 
-$d = simple_query("S", $con, "SELECT id, password FROM users WHERE email = ? LIMIT 1;", [$i["email"]]);
+$d = simple_query("S", $con, "SELECT id, fname, lname, email, type, password FROM users WHERE email = ? LIMIT 1;", [$i["email"]]);
 
-if ($d === false) die("Your email is not signed up yet");
-if(!password_verify($i["password"], $d["password"])) die("Your password is incorrect");
+if ($d === false) error("Your email is not signed up yet");
+if(!password_verify($i["password"], $d["password"])) error("Your password is incorrect");
 
-// save_cookie("user_id", $d["id"]);
-session_start();
-$_SESSION["user_id"] = $d["id"];
+$o->id = (int) $d["id"];
+$o->fname = $d["fname"];
+$o->lname = $d["lname"];
+$o->email = $d["email"];
+$o->isStudent = $d["type"] == 0;
+$o->isTeacher = $d["type"] == 1;
 
-echo $d["id"];
+done();
 
 ?>
